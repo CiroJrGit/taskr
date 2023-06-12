@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @map("_id")
+
+  taskLists TaskList[]
+}
+
+model TaskList {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  title     String
+  createdAt DateTime @default(now())
+  color     String   @default("#265EED")
+  deleted   Boolean  @default(false)
+
+  user  User   @relation(fields: [userId], references: [id])
+  tasks Task[]
+}
+
+model Task {
+  id         String  @id @default(uuid()) @map("_id")
+  taskListId String
+  desc       String
+  completed  Boolean @default(false)
+
+  taskList TaskList @relation(fields: [taskListId], references: [id])
+}

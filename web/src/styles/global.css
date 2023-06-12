@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+@layer utilities {
+   * {
+    @apply transition-colors ease-in-out duration-100
+  }
+
+  svg, path, g, circle {
+    @apply transition-colors ease-in-out duration-10
+  }
+
+  .primary {
+    @apply flex justify-center items-center gap-1 text-gray-100 bg-blue-600 active:bg-blue-700/80 hover:bg-blue-700 focus:outline-none focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800 focus-visible:ring-offset-white-700;
+  }
+
+  .ghost {
+    @apply flex items-center gap-2 px-7 py-4 rounded-lg dark:text-gray-200 text-gray-300 dark:bg-gray-700 bg-white-700 dark:hover:bg-gray-600 hover:bg-white-600/60 dark:active:bg-gray-500/20 active:bg-white-600/80 focus:outline-none focus-visible:ring-1.5 dark:focus-visible:ring-gray-300 focus-visible:ring-white-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800 focus-visible:ring-offset-white-800
+
+  }
+
+
+  .validate[data-invalid] {
+    @apply border dark:border-red-500 border-red-700
+  }
+}
+
