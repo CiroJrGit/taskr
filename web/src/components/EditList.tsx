@@ -21,9 +21,9 @@ const EditList = ({ variant }: EditListProps) => {
     '#29EE9B',
   ];
 
-  function handleColorList(color: string) {
-    console.log(color);
-  }
+  // function handleColorList(color: string) {
+  //   console.log(color);
+  // }
 
   return (
     <>
@@ -81,9 +81,9 @@ const EditList = ({ variant }: EditListProps) => {
                   {colors.map((color, index) => (
                     <button
                       key={index}
-                      onClick={() => {
-                        handleColorList(color);
-                      }}
+                      // onClick={() => {
+                      //   handleColorList(color);
+                      // }}
                       className={clsx(
                         'w-8 h-8 rounded-[5px] hover:border-2 dark:border-white-600 border-gray-500 focus:outline-none focus-visible:ring-1.5 focus-visible:ring-offset-1',
                         'dark:focus-visible:ring-gray-200 focus-visible:ring-gray-400 dark:focus-visible:ring-offset-gray-600 focus-visible:ring-offset-white-700',

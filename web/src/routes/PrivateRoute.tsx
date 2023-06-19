@@ -4,7 +4,6 @@ import { AuthContext } from '../contexts/auth';
 
 const PrivateRoute = ({ children, redirectTo }: any) => {
   const { isAuthenticated } = useContext(AuthContext);
-  console.log(isAuthenticated);
 
   return isAuthenticated ? children : <Navigate to={redirectTo} />;
 };

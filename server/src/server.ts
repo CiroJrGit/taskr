@@ -1,7 +1,7 @@
-import 'dotenv/config';
-
 import fastify from 'fastify';
 import cors from '@fastify/cors';
+import jwt from '@fastify/jwt';
+import { authRoutes } from './routes/auth';
 import { tasklistsRoute } from './routes/tasklists';
 
 const app = fastify();
@@ -10,6 +10,11 @@ app.register(cors, {
   origin: true,
 });
 
+app.register(jwt, {
+  secret: 'taskrwebtoken',
+});
+
+app.register(authRoutes);
 app.register(tasklistsRoute);
 
 app.get('/hello', () => {
@@ -17,7 +22,7 @@ app.get('/hello', () => {
 });
 
 // app.get('/test-sqlite', async () => {
-//   const users = await prismaSQL.user.findMany();
+//   const users = await prisma.user.findMany();
 
 //   return users;
 // });

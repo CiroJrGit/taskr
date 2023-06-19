@@ -1,10 +1,17 @@
 import { FastifyInstance } from 'fastify';
-import { prisma } from '../lib/prisma';
+import { prismaMongo } from '../lib/prisma';
 import { z } from 'zod';
 
 export async function tasklistsRoute(app: FastifyInstance) {
-  app.get('/tasklists', async () => {
-    const tasklists = await prisma.taskList.findMany({
+  app.addHook('preHandler', async (request) => {
+    await request.jwtVerify();
+  });
+
+  app.get('/tasklists', async (request) => {
+    const tasklists = await prismaMongo.taskList.findMany({
+      where: {
+        userId: request.user.sub,
+      },
       orderBy: {
         createdAt: 'asc',
       },
@@ -19,18 +26,22 @@ export async function tasklistsRoute(app: FastifyInstance) {
     });
   });
 
-  app.get('/tasklists/:id', async (request) => {
+  app.get('/tasklists/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
 
     const { id } = paramsSchema.parse(request.params);
 
-    const tasklist = await prisma.taskList.findUniqueOrThrow({
+    const tasklist = await prismaMongo.taskList.findUniqueOrThrow({
       where: {
         id,
       },
     });
+
+    if (tasklist.userId !== request.user.sub) {
+      return reply.status(401).send();
+    }
 
     return tasklist;
   });
@@ -42,17 +53,17 @@ export async function tasklistsRoute(app: FastifyInstance) {
 
     const { title } = bodySchema.parse(request.body);
 
-    const tasklist = await prisma.taskList.create({
+    const tasklist = await prismaMongo.taskList.create({
       data: {
         title,
-        userId: '6cbfed82-30f8-4594-950e-1219a60978fa',
+        userId: request.user.sub,
       },
     });
 
     return tasklist;
   });
 
-  app.put('/tasklists/:id', async (request) => {
+  app.put('/tasklists/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -66,7 +77,17 @@ export async function tasklistsRoute(app: FastifyInstance) {
 
     const { title, color } = bodySchema.parse(request.body);
 
-    const tasklist = await prisma.taskList.update({
+    let tasklist = await prismaMongo.taskList.findFirstOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    if (tasklist.userId !== request.user.sub) {
+      return reply.status(401).send();
+    }
+
+    tasklist = await prismaMongo.taskList.update({
       where: {
         id,
       },
@@ -79,14 +100,24 @@ export async function tasklistsRoute(app: FastifyInstance) {
     return tasklist;
   });
 
-  app.delete('/tasklists/:id', async (request) => {
+  app.delete('/tasklists/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
 
     const { id } = paramsSchema.parse(request.params);
 
-    await prisma.taskList.delete({
+    const tasklist = await prismaMongo.taskList.findFirstOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    if (tasklist.userId !== request.user.sub) {
+      return reply.status(401).send();
+    }
+
+    await prismaMongo.taskList.delete({
       where: {
         id,
       },

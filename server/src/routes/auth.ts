@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { prisma, prismaSQL } from '../lib/prisma';
+import { prisma, prismaMongo } from '../lib/prisma';
 import { z } from 'zod';
 
 export async function authRoutes(app: FastifyInstance) {
@@ -12,13 +12,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     const { id, name, email } = bodySchema.parse(request.body);
 
-    const registerUser = await prisma.user.create({
-      data: {
-        id,
-      },
-    });
-
-    const registerUserSQL = await prismaSQL.user.create({
+    await prisma.user.create({
       data: {
         id,
         name,
@@ -26,9 +20,56 @@ export async function authRoutes(app: FastifyInstance) {
       },
     });
 
+    await prismaMongo.user.create({
+      data: {
+        id,
+      },
+    });
+
+    const token = app.jwt.sign(
+      {
+        name,
+        email,
+      },
+      {
+        sub: id,
+        expiresIn: '30 days',
+      },
+    );
+
     return {
-      registerUser,
-      registerUserSQL,
+      token,
+    };
+  });
+
+  app.get('/authenticate/:id', async (request) => {
+    const paramsSchema = z.object({
+      id: z.string(),
+    });
+
+    const { id } = paramsSchema.parse(request.params);
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    const { name, email } = user;
+
+    const token = app.jwt.sign(
+      {
+        name,
+        email,
+      },
+      {
+        sub: user.id,
+        expiresIn: '30 days',
+      },
+    );
+
+    return {
+      token,
     };
   });
 }

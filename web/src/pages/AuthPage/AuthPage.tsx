@@ -41,7 +41,7 @@ const SignIn = () => {
     // return () => {
     //   clearTimeout(timeoutId);
     // };
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   function handleSignIn() {
     setSignIn(false);

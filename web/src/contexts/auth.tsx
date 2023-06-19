@@ -1,6 +1,9 @@
 import { useState, useEffect, createContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
+import { api } from '../lib/api';
+import cookies from 'js-cookie';
+import decode from 'jwt-decode';
 
 import {
   signInWithEmailAndPassword,
@@ -9,46 +12,78 @@ import {
 } from 'firebase/auth';
 
 import {
-  AuthProps,
   SignInProps,
   SignUpProps,
   AuthProviderProps,
+  UserProps,
+  AuthProps,
+  TokenProps,
 } from '../types/authProps';
 
 export const AuthContext = createContext<AuthProps>({} as AuthProps);
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState({});
-  const [loadingAuth, setLoadingAuth] = useState(false); //    loading de retorno do backend
-  const [validateAuth, setValidateAuth] = useState(false); //  loading ao tentar logar (botao entrar)
-
+  const [user, setUser] = useState<UserProps>({});
+  const [loadingAuth, setLoadingAuth] = useState<boolean>(false); //    loading de retorno do backend (spinner botão entrar)
+  const [validateAuth, setValidateAuth] = useState<boolean>(false); //  loading ao tentar logar (validação email e senha incorretos)
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem('tasker-userSystem'),
+    !!cookies.get('token'),
   );
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    function loadStorage() {
-      const storageUser = localStorage.getItem('tasker-userSystem');
+    function loadCookie() {
+      const token = cookies.get('token');
 
-      if (storageUser) {
-        setUser(JSON.parse(storageUser));
-        // setIsAuthenticated(true);
+      if (token) {
+        setUser(decode(token));
       }
     }
 
-    loadStorage();
+    loadCookie();
   }, []);
 
-  // Salvando localStorage
-  function handleStorageUser(data: any) {
-    localStorage.setItem('tasker-userSystem', JSON.stringify(data));
+  // Salvando cookie de sessão
+  function handleSessionCookie(token: string) {
+    cookies.set('token', token, { expires: 30 });
     setIsAuthenticated(true);
   }
 
-  // Delay de promisse
-  function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  // Cadastrando usuario
+  async function handleSignUp({ name, email, password }: SignUpProps) {
+    setLoadingAuth(true);
+
+    await createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // const data = {
+        //   id: userCredential.user.uid,
+        //   name,
+        //   email: userCredential.user.email,
+        // };
+
+        const registerResponse = await api.post('/register', {
+          id: userCredential.user.uid,
+          name,
+          email: userCredential.user.email,
+        });
+
+        const { token } = registerResponse.data;
+
+        setUser(decode(token));
+        handleSessionCookie(token);
+        setLoadingAuth(false);
+        navigate('/resume');
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        console.log(errorCode);
+        console.log(errorMessage);
+
+        setLoadingAuth(false);
+      });
   }
 
   // Logando usuario
@@ -56,20 +91,23 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     setLoadingAuth(true);
     setValidateAuth(false);
 
-    await delay(700);
     await signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
-        // const uid = value.user.uid;
+        const loginResponse = await api.get(
+          `/authenticate/${userCredential.user.uid}`,
+        );
 
-        // const userProfile = [chamada http para o backend aqui!]
+        const { token } = loginResponse.data;
+        const { sub, name, email } = decode<TokenProps>(token);
 
-        const data = {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
+        const newUser: UserProps = {
+          sub,
+          name,
+          email,
         };
 
-        setUser(data);
-        handleStorageUser(data);
+        setUser(newUser);
+        handleSessionCookie(token);
         setLoadingAuth(false);
         navigate('/resume');
       })
@@ -85,44 +123,11 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       });
   }
 
-  // Cadastrando usuario
-  async function handleSignUp({ name, email, password }: SignUpProps) {
-    setLoadingAuth(true);
-
-    // await delay(650);
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        // const uid = value.user.uid;
-
-        // const userProfile = [chamada http para o backend aqui!]
-
-        const data = {
-          uid: userCredential.user.uid,
-          name,
-          email: userCredential.user.email,
-        };
-
-        setUser(data);
-        handleStorageUser(data);
-        setLoadingAuth(false);
-        navigate('/resume');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        console.log(errorCode);
-        console.log(errorMessage);
-
-        setLoadingAuth(false);
-      });
-  }
-
   // Deslogando usuario
   async function handleSignOut() {
     await signOut(auth)
       .then(() => {
-        localStorage.removeItem('tasker-userSystem');
+        cookies.remove('token');
 
         setUser({});
         setIsAuthenticated(false);

@@ -28,7 +28,7 @@ const FormSignIn = () => {
 
   useEffect(() => {
     setValidateAuth(false);
-  }, []);
+  }, [setValidateAuth]);
 
   function handleSubmit(e: any) {
     e.preventDefault();

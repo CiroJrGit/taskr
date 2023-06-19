@@ -10,26 +10,19 @@ export interface UserProps {
 }
 
 const User = ({ variant }: UserProps) => {
-  const { handleSignOut, user } = useContext<any>(AuthContext);
-  const letter = [
-    'Antonio Margarete',
-    'Bruno Henrique',
-    'Ciro N Junior',
-    'Dominic DeCoco',
-    'Gullami Pitt',
-  ];
+  const { handleSignOut, user } = useContext(AuthContext);
 
   return (
     <>
       {variant === 'sm' && (
         <div className="flex items-center gap-3">
           <div className="px-2.25 py-px rounded-md text-xl font-medium dark:text-gray-200 text-gray-300 dark:bg-gray-500 bg-white-500/40">
-            <span className="duration-40">{letter[2].charAt(0)}</span>
+            <span className="duration-40">{user.name?.charAt(0)}</span>
           </div>
 
           <div className="flex flex-col">
             <span className="block max-w-[175px] pt-0.5 font-semibold text-base dark:text-gray-100 text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis">
-              {letter[2]}
+              {user.name}
             </span>
           </div>
         </div>
@@ -40,12 +33,12 @@ const User = ({ variant }: UserProps) => {
           <div className="flex justify-between items-center gap-9 px-3 py-4 rounded-md dark:hover:bg-gray-500/50 hover:bg-white-600/60 cursor-default">
             <div className="flex items-center gap-3">
               <div className="flex px-2.25 py-0.75 rounded-md text-3xl font-medium dark:text-gray-200 text-gray-300 dark:bg-gray-500 bg-white-500/40">
-                <span className="duration-40">{letter[2].charAt(0)}</span>
+                <span className="duration-40">{user.name?.charAt(0)}</span>
               </div>
 
               <div className="flex flex-col">
                 <span className="font-semibold dark:text-gray-100 text-gray-400 text-start">
-                  {letter[2]}
+                  {user.name}
                 </span>
 
                 <span className="font-medium text-sm dark:text-gray-300 text-white-400 text-start">
