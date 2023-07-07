@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/@prisma-mongo/prisma/client"
+  output   = "@prisma-mongo/prisma/client"
 }
 
 datasource db {
@@ -27,10 +27,11 @@ model TaskList {
 }
 
 model Task {
-  id         String  @id @default(uuid()) @map("_id")
+  id         String   @id @default(uuid()) @map("_id")
   taskListId String
   desc       String
-  completed  Boolean @default(false)
+  createdAt  DateTime @default(now())
+  completed  Boolean  @default(false)
 
   taskList TaskList @relation(fields: [taskListId], references: [id])
 }

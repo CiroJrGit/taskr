@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, Dispatch, SetStateAction } from 'react';
 
 export interface SignInProps {
   email: string;
@@ -11,17 +11,17 @@ export interface SignUpProps {
   password: string;
 }
 
-export interface AuthProviderProps {
-  children: ReactNode;
-}
-
 export interface UserProps {
   sub?: string;
   name?: string;
   email?: string | null;
 }
 
-export interface AuthProps {
+export interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export interface AuthContextProps {
   user: UserProps;
   loadingAuth: boolean;
   validateAuth: boolean;
@@ -29,14 +29,6 @@ export interface AuthProps {
   handleSignIn: ({ email, password }: SignInProps) => Promise<void>;
   handleSignUp: ({ name, email, password }: SignUpProps) => void;
   handleSignOut: () => Promise<void>;
-  setUser: object;
-  setValidateAuth: any;
-}
-
-export interface TokenProps {
-  sub: string;
-  name: string;
-  email: string;
-  iat: number;
-  exp: number;
+  setUser: Dispatch<SetStateAction<UserProps>>;
+  setValidateAuth: Dispatch<SetStateAction<boolean>>;
 }

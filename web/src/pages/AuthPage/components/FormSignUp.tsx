@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { AuthContext } from '../../../contexts/auth';
+import { AuthContext } from '../../../contexts/authContext';
 
 import * as Form from '@radix-ui/react-form';
 import Button from '../../../components/Button';

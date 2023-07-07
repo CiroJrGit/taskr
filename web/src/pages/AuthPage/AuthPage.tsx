@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/authContext';
 import clsx from 'clsx';
 
 import FormSignIn from './components/FormSignIn';
@@ -33,14 +33,6 @@ const SignIn = () => {
     setTimeout(() => {
       setLoadComponent(true);
     }, 150);
-
-    // const timeoutId = setTimeout(() => {
-    //   setLoadComponent(true);
-    // }, 150);
-
-    // return () => {
-    //   clearTimeout(timeoutId);
-    // };
   }, [isAuthenticated, navigate]);
 
   function handleSignIn() {

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AuthContext } from '../contexts/auth';
+import { AuthContext } from '../contexts/authContext';
 
 import * as Separator from '@radix-ui/react-separator';
 import IconLogout from '../assets/icons/IconLogout';
@@ -37,7 +37,7 @@ const User = ({ variant }: UserProps) => {
               </div>
 
               <div className="flex flex-col">
-                <span className="font-semibold dark:text-gray-100 text-gray-400 text-start">
+                <span className="font-medium dark:text-gray-100 text-gray-400 text-start">
                   {user.name}
                 </span>
 

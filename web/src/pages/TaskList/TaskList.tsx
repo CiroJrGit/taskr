@@ -1,24 +1,39 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router';
 import clsx from 'clsx';
 
-import { ListProps } from '../../types/taskListProps';
-import { seedLists } from '../../utils/seedList';
+import { TaskListContext } from '../../contexts/tasklistsContext';
+import { ListProps } from '../../types/tasklistProps';
 
 import * as Popover from '@radix-ui/react-popover';
 import Sidebar from '../../components/Sidebar';
 import NewTask from './components/NewTask';
 import EditList from '../../components/EditList';
-import ProgressBar from '../../components/ProgressBar';
-import Task from './components/Task';
+import Tasks from './components/Tasks';
 
 import { IoEllipsisHorizontal } from 'react-icons/io5';
 
 const TaskList = () => {
-  const { title } = useParams();
+  const { lists, tasks, loadingTasks, loadTasks, handleGetTaskList } =
+    useContext(TaskListContext);
 
-  const [lists] = useState<ListProps[]>(seedLists);
-  const thisList = lists.find((list) => list.title === title);
+  const { id } = useParams();
+  const [list, setList] = useState<ListProps | any>();
+
+  useEffect(() => {
+    getList();
+
+    if (list) {
+      loadTasks(list.id);
+    }
+  }, [id, lists]);
+
+  async function getList() {
+    if (id) {
+      const listResponse = await handleGetTaskList(id);
+      setList(listResponse);
+    }
+  }
 
   return (
     <>
@@ -33,18 +48,18 @@ const TaskList = () => {
                   className={clsx(
                     'block absolute inset-y-0.75 -left-5 w-1.5 h-7 rounded-sm',
                     {
-                      'bg-main-blue': title,
-                      // 'bg-main-purple': list.theme === '#8029EE',
-                      // 'bg-main-pink': list.theme === '#EE29B7',
-                      // 'bg-main-red': list.theme === '#F4385A',
-                      // 'bg-main-yellow': list.theme === '#EE9329',
-                      // 'bg-main-green': list.theme === '#29EE9B',
+                      'bg-main-blue': list?.color === '#265EED',
+                      'bg-main-purple': list?.color === '#8029EE',
+                      'bg-main-pink': list?.color === '#EE29B7',
+                      'bg-main-red': list?.color === '#F4385A',
+                      'bg-main-yellow': list?.color === '#EE9329',
+                      'bg-main-green': list?.color === '#29EE9B',
                     },
                   )}
                   aria-hidden="true"
                 ></span>
                 <h1 className="font-semibold text-3xl dark:text-gray-100 text-gray-500">
-                  {title}
+                  {list?.title}
                 </h1>
               </div>
               <Popover.Root>
@@ -60,24 +75,39 @@ const TaskList = () => {
                 </Popover.Trigger>
                 <Popover.Portal>
                   <Popover.Content className="relative focus:outline-none">
-                    <EditList variant="md" />
+                    <EditList variant="md" list={list} />
                   </Popover.Content>
                 </Popover.Portal>
               </Popover.Root>
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex flex-row-reverse items-center gap-3 h-14 px-5 py-1 rounded-lg dark:bg-gray-700 bg-white-700">
-                <NewTask />
+                <NewTask listColor={list?.color} listId={list?.id} />
               </div>
               <div className="px-1">
-                <ProgressBar />
+                <div className="overflow-hidden w-full h-0.75 rounded-xl dark:bg-gray-700 bg-white-700 transition-all duration-300 ease-out">
+                  <div
+                    className={clsx('h-1 rounded-xl', {
+                      'bg-main-blue': list?.color === '#265EED',
+                      'bg-main-purple': list?.color === '#8029EE',
+                      'bg-main-pink': list?.color === '#EE29B7',
+                      'bg-main-red': list?.color === '#F4385A',
+                      'bg-main-yellow': list?.color === '#EE9329',
+                      'bg-main-green': list?.color === '#29EE9B',
+                    })}
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-4 px-4">
-            {thisList?.tasks.map((task) => (
-              <Task key={task.id} task={task} />
-            ))}
+            {loadingTasks && <span>Carregando tarefas...</span>}
+
+            {tasks.length === 0 && !loadingTasks && <span>Sem tarefas.</span>}
+
+            {!loadingTasks && (
+              <Tasks tasks={tasks} listColor={list?.color} listId={list?.id} />
+            )}
           </div>
         </div>
       </main>

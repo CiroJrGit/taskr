@@ -3,5 +3,4 @@ export interface IconProps {
   height: string;
   stroke?: string;
   alert?: boolean;
-  // iconX?: boolean;
 }

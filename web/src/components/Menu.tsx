@@ -7,8 +7,9 @@ import IconResume from '../assets/icons/IconResume';
 // import IconSettings from '../assets/icons/IconSettings';
 import IconTrash from '../assets/icons/IconTrash';
 import { IoEllipsisHorizontal } from 'react-icons/io5';
+import Trash from './Trash';
 
-const components = () => {
+const Menu = () => {
   return (
     <nav className="flex flex-col gap-2">
       <Popover.Root>
@@ -26,7 +27,7 @@ const components = () => {
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content>
-            <div className="left-4 min-w-[300px] mt-1.5 ml-4 px-1.5 py-2 rounded-lg dark:bg-gray-600 bg-white-700 drop-shadow-md">
+            <div className="relative left-2 min-w-[320px] mt-1.5 px-1.5 py-2 rounded-lg dark:bg-gray-600 bg-white-700 drop-shadow-md">
               <User variant="md" />
             </div>
           </Popover.Content>
@@ -73,13 +74,8 @@ const components = () => {
           </Popover.Trigger>
           <Popover.Portal>
             <Popover.Content className="focus:outline-none">
-              <div
-                className="
-                  left-4 w-80 h-40 mt-1.5 ml-4 px-1 py-3 rounded-lg dark:text-gray-200 text-gray-300
-                  dark:bg-gray-600 bg-white-700 drop-shadow-md
-                "
-              >
-                <span>teste!</span>
+              <div className="relative left-2 min-w-[320px] min-h-[200px] mt-1.5 px-4 py-3 rounded-lg dark:bg-gray-600 bg-white-700 drop-shadow-md">
+                <Trash />
               </div>
             </Popover.Content>
           </Popover.Portal>
@@ -89,4 +85,4 @@ const components = () => {
   );
 };
 
-export default components;
+export default Menu;

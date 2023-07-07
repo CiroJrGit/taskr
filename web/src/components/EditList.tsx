@@ -1,3 +1,7 @@
+import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { TaskListContext } from '../contexts/tasklistsContext';
+import { ListProps } from '../types/tasklistProps';
 import clsx from 'clsx';
 
 import * as Dialog from '@radix-ui/react-dialog';
@@ -8,10 +12,14 @@ import IconEdit from '../assets/icons/IconEdit';
 import IconTrash from '../assets/icons/IconTrash';
 
 interface EditListProps {
+  list: ListProps;
   variant: string;
 }
 
-const EditList = ({ variant }: EditListProps) => {
+const EditList = ({ variant, list }: EditListProps) => {
+  const { handleEditTaskList } = useContext(TaskListContext);
+
+  const navigate = useNavigate();
   const colors = [
     '#265EED',
     '#8029EE',
@@ -21,37 +29,43 @@ const EditList = ({ variant }: EditListProps) => {
     '#29EE9B',
   ];
 
-  // function handleColorList(color: string) {
-  //   console.log(color);
-  // }
+  function handleDeleteFromPage() {
+    handleEditTaskList(list.id, list.title, list.color, true);
+    navigate('/resume');
+  }
 
   return (
     <>
       {variant === 'sm' && (
-        <div className="flex flex-col gap-3 mt-3 mr-1">
+        <div className="flex flex-col gap-3 mt-3 mr-1 p-1 rounded-md dark:bg-gray-800 bg-white-600">
           <Dialog.Root>
             <Dialog.Trigger
               className="
-                flex justify-center p-1 rounded-lg font-medium text-sm dark:active:bg-gray-500/30 active:bg-white-600 dark:hover:bg-gray-500/50 hover:bg-white-600/60
+                flex justify-bee p-1 rounded-md font-medium text-sm dark:active:bg-gray-500/30 active:bg-white-600 dark:hover:bg-gray-500/50 hover:bg-white-600/60
                 focus:outline-none focus-visible:ring-1.5 dark:focus-visible:ring-gray-300 focus-visible:ring-white-400 focus-visible:ring-offset-2
-                dark:focus-visible:ring-offset-gray-600 focus-visible:ring-offset-white-700
+                dark:focus-visible:ring-offset-gray-700 focus-visible:ring-offset-white-700
               "
               type="button"
+              title={'Editar lista'}
             >
               <IconEdit width="20" height="20" stroke="1.6" />
             </Dialog.Trigger>
 
-            <Modal />
+            <Modal type="edit" list={list} />
           </Dialog.Root>
 
           <button
             className="
-              flex justify-center p-1 rounded-lg font-medium text-sm dark:active:bg-gray-500/30 active:bg-white-600 dark:hover:bg-gray-500/50 hover:bg-white-600/60
+              flex justify-center p-1 rounded-md font-medium text-sm dark:active:bg-gray-500/30 active:bg-white-600 dark:hover:bg-gray-500/50 hover:bg-white-600/60
               focus:outline-none focus-visible:ring-1.5 dark:focus-visible:ring-gray-300 focus-visible:ring-white-400 focus-visible:ring-offset-2
-              dark:focus-visible:ring-offset-gray-600 focus-visible:ring-offset-white-700
+              dark:focus-visible:ring-offset-gray-700 focus-visible:ring-offset-white-700
             "
+            onClick={() =>
+              handleEditTaskList(list.id, list.title, list.color, true)
+            }
+            title={'Excluir lista'}
           >
-            <IconTrash width="20" height="20" stroke="1.3" />
+            <IconTrash width="19" height="18" stroke="1.3" />
           </button>
         </div>
       )}
@@ -81,9 +95,6 @@ const EditList = ({ variant }: EditListProps) => {
                   {colors.map((color, index) => (
                     <button
                       key={index}
-                      // onClick={() => {
-                      //   handleColorList(color);
-                      // }}
                       className={clsx(
                         'w-8 h-8 rounded-[5px] hover:border-2 dark:border-white-600 border-gray-500 focus:outline-none focus-visible:ring-1.5 focus-visible:ring-offset-1',
                         'dark:focus-visible:ring-gray-200 focus-visible:ring-gray-400 dark:focus-visible:ring-offset-gray-600 focus-visible:ring-offset-white-700',
@@ -96,9 +107,17 @@ const EditList = ({ variant }: EditListProps) => {
                           'bg-main-green': color === '#29EE9B',
 
                           'border-2 scale-[1.09] focus-visible:ring-1 focus-visible:ring-offset-0':
-                            color === '#265EED',
+                            color === list.color,
                         },
                       )}
+                      onClick={() =>
+                        handleEditTaskList(
+                          list.id,
+                          list.title,
+                          color,
+                          list.deleted,
+                        )
+                      }
                     />
                   ))}
                 </div>
@@ -120,7 +139,7 @@ const EditList = ({ variant }: EditListProps) => {
                     <span>Renomear</span>
                   </Dialog.Trigger>
 
-                  <Modal />
+                  <Modal type="edit" list={list} />
                 </Dialog.Root>
 
                 <button
@@ -129,6 +148,7 @@ const EditList = ({ variant }: EditListProps) => {
                     focus:outline-none focus-visible:ring-1.5 dark:focus-visible:ring-gray-300 focus-visible:ring-white-400 focus-visible:ring-offset-2
                     dark:focus-visible:ring-offset-gray-600 focus-visible:ring-offset-white-700
                   "
+                  onClick={handleDeleteFromPage}
                 >
                   <div className="flex items-center w-8 h-6">
                     <IconTrash width="19" height="19" stroke="1.3" alert />

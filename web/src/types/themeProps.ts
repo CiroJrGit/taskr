@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export interface ThemeProps {
+export interface ThemeContextProps {
   theme: string;
   toggleTheme: () => void;
 }

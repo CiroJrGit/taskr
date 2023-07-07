@@ -1,15 +1,12 @@
 import { useContext } from 'react';
-import { ThemeContext } from '../contexts/theme';
-// import clsx from 'clsx';
+import { ThemeContext } from '../contexts/themeContext';
 
 import * as Switch from '@radix-ui/react-switch';
 
 import { HiMoon } from 'react-icons/hi2';
 import { IoMdSunny } from 'react-icons/io';
-// import { RiSunFill } from 'react-icons/ri';
 
 const Toggle = () => {
-  // const [toggle, setToggle] = useState<boolean>(false);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   return (
@@ -47,59 +44,3 @@ const Toggle = () => {
 };
 
 export default Toggle;
-
-/* <button
-  className="flex items-center gap-1 p-0.5 rounded-lg border border-gray-400 bg-gray-800"
-  onClick={handleToggle}
->
-  <div
-    className={clsx(
-      'flex justify-center items-center w-9 h-7 rounded-md',
-      {
-        'bg-gray-500': !toggle,
-        'bg-gray-800': toggle,
-      },
-    )}
-  >
-    <HiMoon className="text-gray-100" />
-  </div>
-  <div
-    className={clsx(
-      'flex justify-center items-center w-9 h-7 rounded-md',
-      {
-        'bg-gray-500': toggle,
-        'bg-gray-800': !toggle,
-      },
-    )}
-  >
-    <IoMdSunny className="text-gray-100" />
-  </div>
-</button>; */
-
-/* <button
-        className="flex flex-col items-center gap-1 p-0.5 rounded-lg border border-gray-400 bg-gray-800"
-        onClick={handleToggle}
-      >
-        <div
-          className={clsx(
-            'flex justify-center items-center w-7 h-7 rounded-md',
-            {
-              'bg-gray-500': !toggle,
-              'bg-gray-800': toggle,
-            },
-          )}
-        >
-          <HiMoon className="text-gray-100" />
-        </div>
-        <div
-          className={clsx(
-            'flex justify-center items-center w-7 h-7 rounded-md',
-            {
-              'bg-gray-500': toggle,
-              'bg-gray-800': !toggle,
-            },
-          )}
-        >
-          <IoMdSunny className="text-gray-100" />
-        </div>
-      </button> */

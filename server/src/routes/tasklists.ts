@@ -22,6 +22,7 @@ export async function tasklistsRoute(app: FastifyInstance) {
         id: tasklist.id,
         title: tasklist.title,
         color: tasklist.color,
+        deleted: tasklist.deleted,
       };
     });
   });
@@ -73,9 +74,10 @@ export async function tasklistsRoute(app: FastifyInstance) {
     const bodySchema = z.object({
       title: z.string(),
       color: z.string(),
+      deleted: z.boolean(),
     });
 
-    const { title, color } = bodySchema.parse(request.body);
+    const { title, color, deleted } = bodySchema.parse(request.body);
 
     let tasklist = await prismaMongo.taskList.findFirstOrThrow({
       where: {
@@ -94,6 +96,7 @@ export async function tasklistsRoute(app: FastifyInstance) {
       data: {
         title,
         color,
+        deleted,
       },
     });
 

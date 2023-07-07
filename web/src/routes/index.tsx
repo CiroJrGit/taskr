@@ -21,7 +21,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/tasklist/:title"
+        path="/tasklist/:id"
         element={
           <PrivateRoute redirectTo="/">
             <TaskList />
